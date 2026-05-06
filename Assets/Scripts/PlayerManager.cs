@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
-public class PlayerManager : MonoBehaviour
+public class PlayerManager : NetworkBehaviour
 {
     public static PlayerManager Instance;
 
-    public static readonly Color[] availableColors = new Color[]
+    public List<Color> availableColors = new List<Color>()
     {
         Color.red,
         Color.blue,
@@ -19,10 +20,17 @@ public class PlayerManager : MonoBehaviour
 
     void Awake()
     {
-        Instance = this;
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
-    public Color GetAvailableColor()
+    public Color GetColor()
     {
         List<Color> freeColors = new List<Color>();
 
@@ -33,7 +41,7 @@ public class PlayerManager : MonoBehaviour
         }
 
         if (freeColors.Count == 0)
-            return Color.white;
+            return Color.white; // fallback
 
         Color selected = freeColors[Random.Range(0, freeColors.Count)];
         usedColors.Add(selected);
